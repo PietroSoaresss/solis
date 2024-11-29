@@ -222,28 +222,7 @@ class _AppTestState extends State<AppTest> {
                                 style: TextStyle(fontSize: 20, color: Colors.white),
                               ),
                               SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                height: 50,
-                                child: FloatingActionButton(
-                                  onPressed: () {},
-                                  backgroundColor: Colors.white24,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 8),
-                                      Icon(Icons.shopping_cart),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Favoritos",
-                                        style: TextStyle(fontFamily: "Arial"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+
 
 
                           SizedBox(height: 20,),
@@ -255,9 +234,11 @@ class _AppTestState extends State<AppTest> {
                               color: Colors.grey[800],
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Row(
+                            child: Column(
                               children: [
-                                Text("Favoritas", style: TextStyle(color: Colors.white),)
+                                Text("Favoritas", style: TextStyle(color: Colors.white),),
+                                SizedBox(height: 10,),
+                                Text("MXFR11 \%2,23", style: TextStyle(color: Colors.white), ),
                               ],
                             ),
                             ),
