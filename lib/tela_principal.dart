@@ -68,196 +68,184 @@ class _AppTestState extends State<AppTest> {
           ),
           backgroundColor: Color.fromRGBO(255, 110, 64, 100),
         ),
-        body: Stack(
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
           children: [
-            // DraggableScrollableSheet para rolagem inicial visível
-            DraggableScrollableSheet(
-              initialChildSize: 0.9,  // Começa mais abaixo (com a rolagem visível)
-              minChildSize: 0.3,  // Mínimo tamanho da tela
-              maxChildSize: 1.0,  // Tamanho máximo ao arrastar
-              builder: (BuildContext context, ScrollController scrollController) {
-                return SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Conta",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+                Icon(Icons.arrow_forward_ios_rounded, color: Colors.white),
+              ],
+            ),
+            Text(
+              "R\$ 3.809,23",
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Column(
+                  children: [
+                    CircleAvatar(
+                      child: Icon(Icons.pix, color: Colors.white),
+                      maxRadius: 30,
+                      backgroundColor: Colors.white10,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Área Pix",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 20),
+                Column(
+                  children: [
+                    CircleAvatar(
+                      child: Icon(Icons.bar_chart, color: Colors.white),
+                      maxRadius: 30,
+                      backgroundColor: Colors.white10,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Pagar",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 20),
+                Column(
+                  children: [
+                    CircleAvatar(
+                      child: Icon(Icons.phone_android_outlined, color: Colors.white),
+                      maxRadius: 30,
+                      backgroundColor: Colors.white10,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Recarga",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 20),
+                Column(
+                  children: [
+                    CircleAvatar(
+                      child: Icon(Icons.add_chart, color: Colors.white),
+                      maxRadius: 30,
+                      backgroundColor: Colors.white10,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Depositar",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 60, 5, 5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    height: 50,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyApp()),
+                        );
+                      },
+                      backgroundColor: Colors.white24,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(width: 8),
+                          Icon(Icons.monetization_on),
+                          SizedBox(width: 8),
+                          Text("Investimentos"),
+                          SizedBox(width: 120),
+                          Text("R\$ 4.504,13")
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    height: 50,
+                    child: FloatingActionButton(
+                      onPressed: () {},
+                      backgroundColor: Colors.white24,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(width: 8),
+                          Icon(Icons.credit_card),
+                          SizedBox(width: 9),
+                          Text("Meus Cartões")
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 1,
+                    color: Colors.white12,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Novidades",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Conta",
-                              style: TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white),
-                          ],
+                        Text(
+                          "Favoritas",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         Text(
-                          "R\$ 3.809,23",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          "MXFR11 \%2,23",
+                          style: TextStyle(color: Colors.white),
                         ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                CircleAvatar(
-                                  child: Icon(Icons.pix, color: Colors.white),
-                                  maxRadius: 30,
-                                  backgroundColor: Colors.white10,
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Área Pix",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 20),
-                            Column(
-                              children: [
-                                CircleAvatar(
-                                  child: Icon(Icons.bar_chart, color: Colors.white),
-                                  maxRadius: 30,
-                                  backgroundColor: Colors.white10,
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Pagar",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 20),
-                            Column(
-                              children: [
-                                CircleAvatar(
-                                  child: Icon(Icons.phone_android_outlined, color: Colors.white),
-                                  maxRadius: 30,
-                                  backgroundColor: Colors.white10,
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Recarga",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 20),
-                            Column(
-                              children: [
-                                CircleAvatar(
-                                  child: Icon(Icons.add_chart, color: Colors.white),
-                                  maxRadius: 30,
-                                  backgroundColor: Colors.white10,
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Depositar",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 60, 5, 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Container(
-                                height: 50,
-                                child: FloatingActionButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => MyApp()),
-                                    );
-                                  },
-                                  backgroundColor: Colors.white24,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 8),
-                                      Icon(Icons.monetization_on),
-                                      SizedBox(width: 8),
-                                      Text("Investimentos"),
-                                      SizedBox(width: 120),
-                                      Text("R\$ 4.504,13")
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Container(
-                                height: 50,
-                                child: FloatingActionButton(
-                                  onPressed: () {},
-                                  backgroundColor: Colors.white24,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 8),
-                                      Icon(Icons.credit_card),
-                                      SizedBox(width: 9),
-                                      Text("Meus Cartões")
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Container(
-                                height: 1,
-                                color: Colors.white12,
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                "Novidades",
-                                style: TextStyle(fontSize: 20, color: Colors.white),
-                              ),
-                              SizedBox(height: 10),
-
-
-
-                          SizedBox(height: 20,),
-                          
-                          Container(
-                            margin: EdgeInsets.only(bottom: 10),
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              children: [
-                                Text("Favoritas", style: TextStyle(color: Colors.white),),
-                                SizedBox(height: 10,),
-                                Text("MXFR11 \%2,23", style: TextStyle(color: Colors.white), ),
-                              ],
-                            ),
-                            ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          height: 1,
-                          color: Colors.white12,
-                        ),
-                        SizedBox(height: 10),
-                        SizedBox(height: 20),
                       ],
                     ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
+            SizedBox(height: 10),
+            Container(
+              height: 1,
+              color: Colors.white12,
+            ),
+            SizedBox(height: 10),
+            SizedBox(height: 20),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
