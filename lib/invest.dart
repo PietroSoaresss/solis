@@ -296,6 +296,13 @@ class _TelaInvestimentosState extends State<TelaInvestimentos> with SingleTicker
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Voltar',
+          onPressed: () {
+            Navigator.maybePop(context);
+          },
+        ),
         title: const Text(
           'Meus Investimentos',
           style: TextStyle(
