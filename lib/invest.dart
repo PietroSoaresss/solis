@@ -300,16 +300,7 @@ class _TelaInvestimentosState extends State<TelaInvestimentos> with SingleTicker
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Voltar',
           onPressed: () {
-            final navigator = Navigator.of(context);
-            if (navigator.canPop()) {
-              navigator.pop();
-              return;
-            }
-
-            final rootNavigator = Navigator.of(context, rootNavigator: true);
-            if (rootNavigator.canPop()) {
-              rootNavigator.pop();
-            }
+            Navigator.maybePop(context);
           },
         ),
         title: const Text(
