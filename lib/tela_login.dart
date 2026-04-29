@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tela_principal.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
 
 class TelaLogin extends StatefulWidget {
   const TelaLogin({super.key});
@@ -21,13 +22,9 @@ class _TelaLoginState extends State<TelaLogin> {
     setState(() => isLoading = true);
     try {
       final url = Uri.parse('https://dummyjson.com/auth/login');
-      final response = await http.post(
-        url,
-        body: {
-          'username': usuario.text,
-          'password': senha.text,
-        },
-      );
+      final response = await http
+          .post(url, body: {'username': usuario.text, 'password': senha.text})
+          .timeout(const Duration(seconds: 15));
       if (!mounted) return;
       if (response.statusCode == 200) {
         Navigator.pushReplacement(
@@ -45,6 +42,28 @@ class _TelaLoginState extends State<TelaLogin> {
           ),
         );
       }
+    } on SocketException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Sem conexão com a internet'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Erro ao conectar. Tente novamente.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
     } finally {
       if (mounted) setState(() => isLoading = false);
     }

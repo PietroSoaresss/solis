@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color(0xFF121212),
       ),
-      home: TelaPrincipal(),
+      home: const TelaPrincipal(),
     );
   }
 }
@@ -73,6 +73,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     controller.clear();
     valueController.clear();
     setState(() => selectedOption = null);
+    _formKey.currentState!.reset();
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
