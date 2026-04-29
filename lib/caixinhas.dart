@@ -12,7 +12,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFFF6E40),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF121212),
       ),
       home: TelaPrincipal(),
     );
@@ -27,201 +31,327 @@ class TelaPrincipal extends StatefulWidget {
 }
 
 class _TelaPrincipalState extends State<TelaPrincipal> {
-  String? savedData = "Nenhum dado salvo";
-  bool estaLigado = false;
-  final List<String> options = ["CDB", "Renda fixa", "Renda variável"];
+  String? savedData = '';
+  final List<String> options = ['CDB', 'Renda fixa', 'Renda variável'];
   String? selectedOption;
 
-  // Adicionando os controllers como variáveis de estado persistente
   TextEditingController controller = TextEditingController();
-  TextEditingController valueController = TextEditingController();  // Novo controller para o valor do investimento
+  TextEditingController valueController = TextEditingController();
 
   List<Map<String, String>> investments = [];
+
+  final _formKey = GlobalKey<FormState>();
+
+  static const Color kPrimary = Color(0xFFFF6E40);
+  static const Color kSurface = Color(0xFF1E1E1E);
 
   @override
   void initState() {
     super.initState();
-    loadData();  // Carrega os dados salvos ao iniciar
-  }
-
-  // Função para salvar os dados (nome da reserva, tipo de investimento, valor e estado do switch)
-  Future<void> saveData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Salva o texto, o estado do switch e a opção selecionada
-    await prefs.setString('data', controller.text);
-    await prefs.setBool('switchValue', estaLigado);
-    await prefs.setString('selectedOption', selectedOption ?? '');
-
-    // Adiciona o novo investimento à lista de investimentos
-    if (controller.text.isNotEmpty && selectedOption != null && valueController.text.isNotEmpty) {
-      String newInvestment = '${controller.text}|$selectedOption|${valueController.text}';
-      investments.add({
-        'name': controller.text,
-        'type': selectedOption!,
-        'value': valueController.text
-      });
-
-      // Salva a lista de investimentos no SharedPreferences
-      await prefs.setStringList(
-        'investments',
-        investments
-            .map((investment) =>
-        '${investment['name']}|${investment['type']}|${investment['value']}')
-            .toList(),
-      );
-    }
-
-    // Atualiza os dados na interface após salvar
     loadData();
   }
 
-  // Função para carregar os dados do SharedPreferences
-  Future<void> loadData() async {
+  Future<void> saveData() async {
+    if (!_formKey.currentState!.validate()) return;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      savedData = prefs.getString('data') ?? "Nenhum dado salvo";
-      selectedOption = prefs.getString('selectedOption') ?? '';
-      controller.text = savedData ?? ''; // Atualiza o controller com o valor salvo
-      loadInvestments();
-    });
+    await prefs.setString('data', controller.text);
+    await prefs.setString('selectedOption', selectedOption ?? '');
+
+    if (controller.text.isNotEmpty && selectedOption != null && valueController.text.isNotEmpty) {
+      investments.add({
+        'name': controller.text,
+        'type': selectedOption!,
+        'value': valueController.text,
+      });
+      await prefs.setStringList(
+        'investments',
+        investments.map((inv) => '${inv['name']}|${inv['type']}|${inv['value']}').toList(),
+      );
+    }
+
+    controller.clear();
+    valueController.clear();
+    setState(() => selectedOption = null);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Investimento salvo com sucesso!'),
+          backgroundColor: kPrimary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
+    loadData();
   }
 
-  // Função para carregar os investimentos salvos
-  Future<void> loadInvestments() async {
+  Future<void> loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? savedInvestments = prefs.getStringList('investments');
-    if (savedInvestments != null) {
-      setState(() {
-        investments = savedInvestments
-            .map((investment) => {
-          'name': investment.split('|')[0],
-          'type': investment.split('|')[1],
-          'value': investment.split('|')[2],
-        })
-            .toList();
-      });
-    }
+    final saved = prefs.getString('data') ?? '';
+    final option = prefs.getString('selectedOption') ?? '';
+    final savedInvestments = prefs.getStringList('investments');
+
+    setState(() {
+      savedData = saved;
+      selectedOption = option.isEmpty ? null : option;
+      if (savedInvestments != null) {
+        investments = savedInvestments.map((inv) {
+          final parts = inv.split('|');
+          return {
+            'name': parts[0],
+            'type': parts[1],
+            'value': parts[2],
+          };
+        }).toList();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,  // Define o fundo da tela como preto
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text("Investimentos", style: TextStyle(color: Colors.black)),  // Título do AppBar em preto
-        backgroundColor: Colors.white,  // Cor de fundo do AppBar
+        backgroundColor: kPrimary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Caixinhas',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),  // Ícone do botão de voltar em preto
-          onPressed: () {
-            Navigator.pop(context); // Volta para a página anterior
-          },
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(  // Centraliza todos os elementos na tela
-          child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Form Card ───────────────────────────────────────────
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: kSurface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white12),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      'Nova Caixinha',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: controller,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Nome da reserva',
+                        labelStyle: const TextStyle(color: Colors.white54),
+                        prefixIcon: const Icon(Icons.savings_outlined, color: kPrimary),
+                        filled: true,
+                        fillColor: const Color(0xFF2A2A2A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: kPrimary, width: 2),
+                        ),
+                      ),
+                      validator: (v) => (v == null || v.isEmpty) ? 'Informe o nome da reserva' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: valueController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Valor (R\$)',
+                        labelStyle: const TextStyle(color: Colors.white54),
+                        prefixIcon: const Icon(Icons.attach_money_rounded, color: kPrimary),
+                        filled: true,
+                        fillColor: const Color(0xFF2A2A2A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: kPrimary, width: 2),
+                        ),
+                      ),
+                      validator: (v) => (v == null || v.isEmpty) ? 'Informe o valor' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    DropdownButtonFormField<String>(
+                      value: selectedOption,
+                      dropdownColor: kSurface,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Tipo de investimento',
+                        labelStyle: const TextStyle(color: Colors.white54),
+                        prefixIcon: const Icon(Icons.category_outlined, color: kPrimary),
+                        filled: true,
+                        fillColor: const Color(0xFF2A2A2A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: kPrimary, width: 2),
+                        ),
+                      ),
+                      hint: const Text('Selecione', style: TextStyle(color: Colors.white38)),
+                      items: options
+                          .map((opt) => DropdownMenuItem(value: opt, child: Text(opt)))
+                          .toList(),
+                      onChanged: (v) => setState(() => selectedOption = v),
+                      validator: (v) => (v == null || v.isEmpty) ? 'Selecione o tipo' : null,
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: saveData,
+                        icon: const Icon(Icons.save_rounded),
+                        label: const Text('Salvar Caixinha'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kPrimary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 0,
+                          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 28),
+
+            if (investments.isNotEmpty) ...[
+              const Text(
+                'Minhas Caixinhas',
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              ...investments.map((inv) => _InvestmentCard(investment: inv)).toList(),
+            ] else
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
+                child: Column(
+                  children: [
+                    Icon(Icons.savings_outlined, size: 64, color: Colors.white12),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Nenhuma caixinha criada ainda',
+                      style: TextStyle(color: Colors.white38, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InvestmentCard extends StatelessWidget {
+  const _InvestmentCard({required this.investment});
+  final Map<String, String> investment;
+
+  static const Map<String, Color> _typeColors = {
+    'CDB': Color(0xFF4CAF50),
+    'Renda fixa': Color(0xFF2196F3),
+    'Renda variável': Color(0xFFFF9800),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _typeColors[investment['type']] ?? const Color(0xFFFF6E40);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                investment['name']!.isNotEmpty ? investment['name']![0].toUpperCase() : 'C',
+                style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,  // Centraliza os itens verticalmente
-              crossAxisAlignment: CrossAxisAlignment.center,  // Centraliza os itens horizontalmente
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Campo de entrada para o nome da reserva
-                TextField(
-                  controller: controller,  // Usando o controller persistente
-                  decoration: InputDecoration(
-                    labelText: "Digite o Nome da Reserva",
-                    labelStyle: TextStyle(color: Colors.white),  // Cor do texto do label
-                    filled: true,
-                    fillColor: Colors.grey[800],  // Cor de fundo do campo
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.white), // Cor da borda
-                    ),
+                Text(
+                  investment['name'] ?? '',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  style: TextStyle(color: Colors.white), // Cor do texto digitado
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  controller: valueController,  // Controller para o valor
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: "Valor do Investimento",
-                    labelStyle: TextStyle(color: Colors.white),  // Cor do texto do label
-                    filled: true,
-                    fillColor: Colors.grey[800],  // Cor de fundo do campo
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.white), // Cor da borda
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.white), // Cor do texto digitado
-                ),
-                SizedBox(height: 20,),
-                // Dropdown para selecionar uma opção
-                DropdownButton<String>(
-                  hint: Text("Selecione uma opção", style: TextStyle(color: Colors.black)),  // Cor do texto do hint
-                  value: selectedOption?.isEmpty == true ? null : selectedOption,
-                  items: options.map((option) {
-                    return DropdownMenuItem(
-                      value: option,
-                      child: Text(option, style: TextStyle(color: Colors.white)),  // Cor do texto da opção
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedOption = newValue;
-                    });
-                  },
-                ),
-                SizedBox(height: 20),
-
-                // Campo de entrada para o valor do investimento
-
-                SizedBox(height: 20),
-
-                // Botão para salvar os dados
-                ElevatedButton(
-                  onPressed: saveData,  // Salva os dados ao clicar
-                  child: Text("Salvar Investimento"),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.deepOrangeAccent,  // Cor de fundo do botão
-                    onPrimary: Colors.black,  // Cor do texto do botão
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                  child: Text(
+                    investment['type'] ?? '',
+                    style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                 ),
-                SizedBox(height: 20),
-
-                // Exibe os investimentos salvos
-                Column(
-                  children: investments.map((investment) {
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[800],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Investimento: ${investment['name']}", style: TextStyle(color: Colors.white)),
-                          Text("Tipo: ${investment['type']}", style: TextStyle(color: Colors.white)),
-                          Text("Valor: R\$ ${investment['value']}", style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-
-
               ],
             ),
           ),
-        ),
+          Text(
+            'R\$ ${investment['value']}',
+            style: const TextStyle(color: Color(0xFFFF6E40), fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+        ],
       ),
     );
   }
